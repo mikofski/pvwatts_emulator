@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+        <!-- Bootstrap CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        
+        <title>{{ title }}</title>
+
+<link
+    href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.14.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.14.min.css"
+    rel="stylesheet" type="text/css">
+<link
+    href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.14.min.css"
+    rel="stylesheet" type="text/css">
+
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.14.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.14.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.14.min.js"></script>
+
+    </head>
+
+    <body>
+        <div class="container">
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="alert alert-danger" role="alert">
+    <ul>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+    </div>
+  {% endif %}
+{% endwith %}
+
+         <!-- Content here -->
+        <h1>DNV GL PVWatts Emulator</h1>
+<form method="POST">
+  <div class="form-group">
+    <label for="latitude">Latitude:</label>
+    <input type="number" step="0.0001" class="form-control" id="latitude" aria-describedby="latitudeHelp" placeholder="Enter latitude, eg: 35.8" name="latitude">
+    <small id="latitudeHelp" class="form-text text-muted">Enter the latitude in decimal degrees, positive for north of equator.</small>
+  </div>
+  <div class="form-group">
+    <label for="longitude">Longitude:</label>
+    <input type="number" step="0.0001" class="form-control" id="longitude" aria-describedby="longitudeHelp" placeholder="Enter longitude, eg: -122.1" name="longitude">
+    <small id="longitudeHelp" class="form-text text-muted">Enter the longitude in decimal degrees, negative for west of primer meridian.</small>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="trackerCheck" name="trackerCheck">
+    <label class="form-check-label" for="trackerCheck">Tracker</label>
+    <small id="trackerHelp" class="form-text text-muted">If yes, the model assumes an azimuth of 0 and a tilt of 0.</small>
+  </div>
+  <div class="form-group">
+    <label for="azimuth">Azimuth:</label>
+    <input type="number" step="0.0001" class="form-control" id="azimuth" aria-describedby="azimuthHelp" placeholder="Enter azimuth, eg 182.1" name="azimuth">
+    <small id="azimuthHelp" class="form-text text-muted">Enter azimuth in degrees. By convention due south is azimuth = 0,
+        orientations east of south are negative, and west of south are positive. (<i>EG:</i> Due east is -90, and due west is +90.)</small>
+  </div>
+  <div class="form-group">
+    <label for="tilt">Tilt:</label>
+    <input type="number" step="0.0001" class="form-control" id="tilt" aria-describedby="tiltHelp" placeholder="Enter tilt" name="tilt">
+    <small id="tiltHelp" class="form-text text-muted">Enter the tilt in decimal degrees, positive less than 90&deg;.</small>
+  </div>
+  <!-- module type -->
+  <h3>Module Type</h3>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="moduleTypeRadios" id="moduleTypeRadiosPolyCrystalline" value="optionPolyCrystalline" checked>
+    <label class="form-check-label" for="moduleTypeRadiosPolyCrystalline">
+      Poly-Crystalline
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="moduleTypeRadios" id="moduleTypeRadiosPolyCrystalline" value="optionMonoCrystalline">
+    <label class="form-check-label" for="moduleTypeRadiosMonoCrystalline">
+      Mono-Crystalline
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="moduleTypeRadios" id="moduleTypeRadiosThinFilmFirstSolar" value="optionThinFilmFirstSolar" disabled>
+    <label class="form-check-label" for="moduleTypeRadiosThinFilmFirstSolar">
+      Thin Film (First Solar)
+    </label>
+  </div>
+  <!-- end module type -->
+  <div class="form-group">
+    <label for="projectSize">Project Size (kWac):</label>
+    <input type="number" step="0.0001" class="form-control" id="projectSize" aria-describedby="projectSizeHelp" placeholder="Enter project size, eg: 75000" name="projectSize">
+    <small id="projectSizeHelp" class="form-text text-muted">Enter the project size in kilowatts AC.</small>
+  </div>
+  <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="dstCheck" name="dstCheck">
+    <label class="form-check-label" for="dstCheck">Calculation adjusted for daylight savings</label>
+    <small id="dstHelp" class="form-text text-muted">If yes, the calculation will be adjusted for DST.</small>
+  </div>
+  <div>
+    {% if header %}
+    <h3>Reference Station Used</h3>
+    <table>
+    {% for k, v in header.items() %}
+    <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+    {% endfor %}
+    </table>
+    {% endif %}</div>
+  <button type="submit" class="btn btn-primary" value="/">Submit</button>
+</form>
+
+{% if plot_div %}
+        {{ plot_div|safe }}
+{% endif %}
+{% if plot_div %}
+        {{ plot_script|safe }}
+{% endif %}
+
+        </div>
+
+<!-- bootstrap js -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    </body>
+
+</html>
