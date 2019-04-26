@@ -36,10 +36,11 @@ LATITUDE, LONGITUDE = 40.5137, -108.5449
 def pvwatts(latitude=LATITUDE, longitude=LONGITUDE, tracker=False,
             surface_azimuth=0.0, surface_tilt=20.0, module_type=None,
             project_size=None, dst=False):
+    kwargs = {'title': 'PVWatts'}
     if request.method == 'GET':
-        kwargs = {'title': 'PVWatts'}
-        mpp = calculate(
+        mpp, header = calculate(
             latitude, longitude, tracker, surface_tilt, surface_azimuth)
+        kwargs['header'] = header
         mpp = pd.DataFrame(mpp, index=TIMES)
         Edaily = mpp.p_mp.resample('D').sum()
         plot = figure(title='Daily Energy', x_axis_type="datetime")
@@ -120,7 +121,7 @@ def calculate(latitude, longitude, tracker, surface_tilt, surface_azimuth):
         CECMOD_MONO.I_L_ref, CECMOD_MONO.I_o_ref,
         CECMOD_MONO.R_sh_ref, CECMOD_MONO.R_s, CECMOD_MONO.Adjust)
     mpp = pvlib.pvsystem.max_power_point(*cecparams, method='newton')
-    return mpp
+    return mpp, header
 
 
 if __name__ == '__main__':
