@@ -13,18 +13,18 @@
         <title>{{ title }}</title>
 
 <link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.14.min.css"
+    href="https://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.css"
     rel="stylesheet" type="text/css">
 <link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.14.min.css"
+    href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.1.0.min.css"
     rel="stylesheet" type="text/css">
 <link
-    href="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.14.min.css"
+    href="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.1.0.min.css"
     rel="stylesheet" type="text/css">
 
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-0.12.14.min.js"></script>
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.14.min.js"></script>
-<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.14.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.1.0.min.js"></script>
+<script src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.1.0.min.js"></script>
 
     </head>
 
@@ -47,12 +47,14 @@
 <form method="POST">
   <div class="form-group">
     <label for="latitude">Latitude:</label>
-    <input type="number" step="0.0001" class="form-control" id="latitude" aria-describedby="latitudeHelp" placeholder="Enter latitude, eg: 35.8" name="latitude" value="40.5137" required>
+    <input type="number" step="0.0001" class="form-control" id="latitude" aria-describedby="latitudeHelp" placeholder="Enter latitude, eg: 35.8" name="latitude"
+     value="40.5137" required>
     <small id="latitudeHelp" class="form-text text-muted">Enter the latitude in decimal degrees, positive for north of equator.</small>
   </div>
   <div class="form-group">
     <label for="longitude">Longitude:</label>
-    <input type="number" step="0.0001" class="form-control" id="longitude" aria-describedby="longitudeHelp" placeholder="Enter longitude, eg: -122.1" name="longitude" value="-108.5449" required>
+    <input type="number" step="0.0001" class="form-control" id="longitude" aria-describedby="longitudeHelp" placeholder="Enter longitude, eg: -122.1" name="longitude"
+     value="-108.5449" required>
     <small id="longitudeHelp" class="form-text text-muted">Enter the longitude in decimal degrees, negative for west of primer meridian.</small>
   </div>
   <div class="form-check">
