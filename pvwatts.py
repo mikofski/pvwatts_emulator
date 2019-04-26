@@ -23,21 +23,27 @@ INVERTER_10K = INVERTERS['SMA_America__SB10000TL_US__240V__240V__CEC_2018_']
 CECMODS = pvlib.pvsystem.retrieve_sam('CECMod')
 CECMOD_POLY = CECMODS['Canadian_Solar_CS6X_300P']
 CECMOD_MONO = CECMODS['Canadian_Solar_CS6X_300M']
+LATITUDE, LONGITUDE = 40.5137, -108.5449
 
 app = Flask(__name__)
 
-ROUTE = (
-    '/<latitude>/<longitude>/<tracker>/<surface_azimuth>/<surface_tilt>'
-    '/<module_type>/<project_size>/<dst>')
-LATITUDE, LONGITUDE = 40.5137, -108.5449
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route(ROUTE, methods=['GET', 'POST'])
+@app.route('/<latitude>/<longitude>/<tracker>/<surface_azimuth>/<surface_tilt>', methods=['GET', 'POST'])
 def pvwatts(latitude=LATITUDE, longitude=LONGITUDE, tracker=False,
             surface_azimuth=0.0, surface_tilt=20.0, module_type=None,
             project_size=None, dst=False):
     kwargs = {'title': 'PVWatts'}
     if request.method == 'GET':
+        kwargs.update(
+            latitude=latitude, longitude=longitude, tracker=tracker,
+            surface_tilt=surface_tilt, surface_azimuth=surface_azimuth,
+            dst=dst)
+        latitude = float(latitude)
+        longitude = float(longitude)
+        tracker = tracker == 'True'
+        surface_tilt = float(surface_tilt)
+        surface_azimuth = float(surface_azimuth)
         mpp, header = calculate(
             latitude, longitude, tracker, surface_tilt, surface_azimuth)
         kwargs['header'] = header
