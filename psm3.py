@@ -5,8 +5,10 @@ see https://developer.nrel.gov/docs/solar/nsrdb/psm3_data_download/
 
 import io
 import csv
+import datetime
 import requests
 import pandas as pd
+import pytz
 
 URL = "http://developer.nrel.gov/api/solar/nsrdb_psm3_download.csv"
 
@@ -42,6 +44,22 @@ def get_psm3(latitude, longitude, tmy='tmy', interval=60):
         x = csv.reader(f, delimiter=',', lineterminator='\n')
         y = list(x)
         z = dict(zip(y[0], y[1]))
-        w = pd.DataFrame(y[3:], columns=y[2])
+        # in USA all timezones are integers
+        z['Local Time Zone'] = int(z['Local Time Zone'])
+        z['Time Zone'] = int(z['Time Zone'])
+        z['Latitude'] = float(z['Latitude'])
+        z['Longitude'] = float(z['Longitude'])
+        z['Elevation'] = int(z['Elevation'])
+        tz = pytz.timezone('Etc/GMT%+d' % -z['Time Zone'])
+        w = pd.DataFrame(y[3:], columns=y[2], dtype=float)
+        w.Year = w.Year.apply(lambda yr: int(yr))
+        w.Month = w.Month.apply(lambda mt: int(mt))
+        w.Day = w.Day.apply(lambda dy: int(dy))
+        w.Hour = w.Hour.apply(lambda hr: int(hr))
+        w.Minute = w.Minute.apply(lambda mn: int(mn))
+        w.index = w.apply(
+            lambda dt: tz.localize(datetime.datetime(
+                int(dt.Year), int(dt.Month), int(dt.Day),
+                int(dt.Hour), int(dt.Minute))), axis=1)
         return z, w
     raise requests.HTTPError(s.json()['errors'])

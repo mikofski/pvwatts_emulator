@@ -47,12 +47,12 @@
 <form method="POST">
   <div class="form-group">
     <label for="latitude">Latitude:</label>
-    <input type="number" step="0.0001" class="form-control" id="latitude" aria-describedby="latitudeHelp" placeholder="Enter latitude, eg: 35.8" name="latitude">
+    <input type="number" step="0.0001" class="form-control" id="latitude" aria-describedby="latitudeHelp" placeholder="Enter latitude, eg: 35.8" name="latitude" value="40.5137" required>
     <small id="latitudeHelp" class="form-text text-muted">Enter the latitude in decimal degrees, positive for north of equator.</small>
   </div>
   <div class="form-group">
     <label for="longitude">Longitude:</label>
-    <input type="number" step="0.0001" class="form-control" id="longitude" aria-describedby="longitudeHelp" placeholder="Enter longitude, eg: -122.1" name="longitude">
+    <input type="number" step="0.0001" class="form-control" id="longitude" aria-describedby="longitudeHelp" placeholder="Enter longitude, eg: -122.1" name="longitude" value="-108.5449" required>
     <small id="longitudeHelp" class="form-text text-muted">Enter the longitude in decimal degrees, negative for west of primer meridian.</small>
   </div>
   <div class="form-check">
@@ -62,13 +62,13 @@
   </div>
   <div class="form-group">
     <label for="azimuth">Azimuth:</label>
-    <input type="number" step="0.0001" class="form-control" id="azimuth" aria-describedby="azimuthHelp" placeholder="Enter azimuth, eg 182.1" name="azimuth">
+    <input type="number" step="0.0001" class="form-control" id="azimuth" aria-describedby="azimuthHelp" placeholder="Enter azimuth, eg 182.1" name="azimuth" value="0" required>
     <small id="azimuthHelp" class="form-text text-muted">Enter azimuth in degrees. By convention due south is azimuth = 0,
         orientations east of south are negative, and west of south are positive. (<i>EG:</i> Due east is -90, and due west is +90.)</small>
   </div>
   <div class="form-group">
     <label for="tilt">Tilt:</label>
-    <input type="number" step="0.0001" class="form-control" id="tilt" aria-describedby="tiltHelp" placeholder="Enter tilt" name="tilt">
+    <input type="number" step="0.0001" class="form-control" id="tilt" aria-describedby="tiltHelp" placeholder="Enter tilt" name="tilt" value="0" required>
     <small id="tiltHelp" class="form-text text-muted">Enter the tilt in decimal degrees, positive less than 90&deg;.</small>
   </div>
   <!-- module type -->
