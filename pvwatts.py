@@ -2,6 +2,7 @@
 PVWatts Emulator
 """
 import json
+import os
 import pvlib
 import threading
 import queue
@@ -26,7 +27,7 @@ CECMOD_MONO = CECMODS['Canadian_Solar_CS6X_300M']
 LATITUDE, LONGITUDE = 40.5137, -108.5449
 
 app = Flask(__name__)
-
+app.secret_key = os.urandom(40)
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/<latitude>/<longitude>/<tracker>/<surface_azimuth>/<surface_tilt>', methods=['GET', 'POST'])
@@ -44,8 +45,12 @@ def pvwatts(latitude=LATITUDE, longitude=LONGITUDE, tracker=False,
         tracker = tracker == 'True'
         surface_tilt = float(surface_tilt)
         surface_azimuth = float(surface_azimuth)
-        mpp, header = calculate(
-            latitude, longitude, tracker, surface_tilt, surface_azimuth)
+        try:
+            mpp, header = calculate(
+                latitude, longitude, tracker, surface_tilt, surface_azimuth)
+        except requests.HTTPError as exc:
+            flash(exc, 'error')
+            return render_template('pvwatts.html', title='PVWatts')
         kwargs['header'] = header
         mpp = pd.DataFrame(mpp, index=TIMES)
         Edaily = mpp.p_mp.resample('D').sum()
@@ -78,11 +83,7 @@ def pvwatts(latitude=LATITUDE, longitude=LONGITUDE, tracker=False,
 
 def calculate(latitude, longitude, tracker, surface_tilt, surface_azimuth):
     # TODO: put in a thread
-    try:
-        header, data = get_psm3(latitude, longitude)
-    except requests.HTTPError as exc:
-        flash(exc, 'error')
-        return render_template('pvwatts.html', title='PVWatts')
+    header, data = get_psm3(latitude, longitude)
     # get solar position
     times = data.index
     sp = pvlib.solarposition.get_solarposition(
