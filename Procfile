@@ -1,1 +1,1 @@
-web: python pvwatts.py
+web: pvwatts:app
