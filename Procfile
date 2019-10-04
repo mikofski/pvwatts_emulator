@@ -1,1 +1,1 @@
-web: pvwatts:app
+web gunicorn pvwatts:app
