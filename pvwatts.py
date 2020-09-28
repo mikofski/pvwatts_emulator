@@ -6,7 +6,6 @@ import os
 import pvlib
 import threading
 import queue
-from psm3 import get_psm3
 import pandas as pd
 import requests
 from bokeh.plotting import figure
@@ -20,11 +19,13 @@ STARTDATE = '%d-01-01T00:00:00' % YEAR
 ENDDATE = '%d-12-31T23:59:59' % YEAR
 TIMES = pd.DatetimeIndex(start=STARTDATE, end=ENDDATE, freq='H')
 INVERTERS = pvlib.pvsystem.retrieve_sam('CECInverter')
-INVERTER_10K = INVERTERS['SMA_America__SB10000TL_US__240V__240V__CEC_2018_']
+INVERTER_10K = INVERTERS['SMA_America__SB10000TL_US__240V_']
 CECMODS = pvlib.pvsystem.retrieve_sam('CECMod')
-CECMOD_POLY = CECMODS['Canadian_Solar_CS6X_300P']
-CECMOD_MONO = CECMODS['Canadian_Solar_CS6X_300M']
+CECMOD_POLY = CECMODS['Canadian_Solar_Inc__CS6X_300P']
+CECMOD_MONO = CECMODS['Canadian_Solar_Inc__CS6X_300M']
 LATITUDE, LONGITUDE = 40.5137, -108.5449
+NREL_API_KEY = os.getenv('NREL_API_KEY', 'DEMO_KEY')
+EMAIL = os.getenv('EMAIL', 'bwana.marko@yahoo.com')
 
 app = Flask(__name__)
 app.secret_key = os.urandom(40)
@@ -83,7 +84,7 @@ def pvwatts(latitude=LATITUDE, longitude=LONGITUDE, tracker=False,
 
 def calculate(latitude, longitude, tracker, surface_tilt, surface_azimuth):
     # TODO: put in a thread
-    header, data = get_psm3(latitude, longitude)
+    header, data = pvlib.iotools.get_psm3(latitude, longitude, NREL_API_KEY, EMAIL)
     # get solar position
     times = data.index
     sp = pvlib.solarposition.get_solarposition(
@@ -119,9 +120,9 @@ def calculate(latitude, longitude, tracker, surface_tilt, surface_azimuth):
     poa_direct = poa['poa_direct']
     poa_diffuse = poa['poa_diffuse']
     poa_global = poa['poa_global']
-    iam = pvlib.pvsystem.ashraeiam(aoi)
+    iam = pvlib.iam.ashrae(aoi)
     effective_irradiance = poa_direct*iam + poa_diffuse
-    temp_cell = pvlib.pvsystem.pvsyst_celltemp(poa_global, temp_air)
+    temp_cell = pvlib.temperature.pvsyst_cell(poa_global, temp_air)
     cecparams = pvlib.pvsystem.calcparams_cec(
         effective_irradiance, temp_cell,
         CECMOD_MONO.alpha_sc, CECMOD_MONO.a_ref,
